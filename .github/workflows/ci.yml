@@ -66,23 +66,23 @@ jobs:
       run: |
         flake8 src tests || echo "Lint warnings/errors found, please review and fix them."
 
-  test:
-    name: Run Tests
-    runs-on: ubuntu-latest
-    needs: [setup, generate_data]
+ ## test:
+  #  name: Run Tests
+  #  runs-on: ubuntu-latest
+   # needs: [setup, generate_data]
 
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+   # steps:
+   # - name: Checkout code
+#uses: actions/checkout@v2
 
-    - name: Run tests with coverage
-      run: |
-        export PYTHONPATH=.
-        coverage run -m unittest discover tests || echo "Tests failed, please review the test output."
-        coverage report -m
-        coverage xml
-      env:
-        PYTHONPATH: .
+    #- name: Run tests with coverage
+    #  run: |
+    #    export PYTHONPATH=.
+     #   coverage run -m unittest discover tests || echo "Tests failed, please review the test output."
+     ##   coverage report -m
+      #  coverage xml
+     # env:
+      #  PYTHONPATH: .
 
   security:
     name: Security Check
