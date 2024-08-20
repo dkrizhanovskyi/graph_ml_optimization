@@ -9,8 +9,8 @@ on:
       - main
 
 jobs:
-  test:
-    name: Run Tests
+  setup:
+    name: Setup Python Environment
     runs-on: ubuntu-latest
 
     steps:
@@ -27,7 +27,72 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Run tests
+  generate_data:
+    name: Generate Test Data
+    runs-on: ubuntu-latest
+    needs: setup
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Generate necessary graph files
+      run: |
+        mkdir -p data/processed/social_networks
+        python src/generate_graphs.py  # Скрипт для генерации графов или создание вручную
+      env:
+        PYTHONPATH: .
+
+  lint:
+    name: Lint Code
+    runs-on: ubuntu-latest
+    needs: setup
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install flake8
+
+    - name: Run flake8
+      run: |
+        flake8 src tests
+
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    needs: [setup, generate_data]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Run tests with coverage
       run: |
         export PYTHONPATH=.
-        python -m unittest discover tests
+        coverage run -m unittest discover tests
+        coverage report -m
+        coverage xml
+      env:
+        PYTHONPATH: .
+
+  security:
+    name: Security Check
+    runs-on: ubuntu-latest
+    needs: setup
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install bandit
+
+    - name: Run Bandit for security checks
+      run: |
+        bandit -r src
