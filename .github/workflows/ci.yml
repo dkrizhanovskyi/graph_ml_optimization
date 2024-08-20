@@ -39,7 +39,9 @@ jobs:
     - name: Generate necessary graph files
       run: |
         mkdir -p data/processed/social_networks
-        python src/generate_graphs.py  # Скрипт для генерации графов или создание вручную
+        # Скрипт для генерации графов или создание вручную
+        # Пропустим этот шаг, если скрипт не существует или не нужен
+        if [ -f src/generate_graphs.py ]; then python src/generate_graphs.py; fi
       env:
         PYTHONPATH: .
 
@@ -52,7 +54,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Install dependencies
+    - name: Install dependencies for linting
       run: |
         python -m pip install --upgrade pip
         pip install flake8
@@ -88,7 +90,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Install dependencies
+    - name: Install dependencies for security checks
       run: |
         python -m pip install --upgrade pip
         pip install bandit
